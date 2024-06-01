@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        // or, via Gradle Plugin Portal:
+        // url "https://plugins.gradle.org/m2/"
+    }
+    dependencies {
+        classpath "org.openapitools:openapi-generator-gradle-plugin:${openapiGeneratorVersion}"
+
+    }
+}
+
+plugins {
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.openapi.generator' version "${openapiGeneratorVersion}"
+    id 'java-library-distribution'
+}
+
+group = myPackage
+version = '1.0-SNAPSHOT'
+
+dependencies {
+    compileOnly 'javax.servlet:servlet-api:2.5'
+    implementation 'org.springframework.boot:spring-boot-starter:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0-M2'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+}
+
+java {
+    sourceCompatibility = '21'
+}
+
+sourceSets.main.java.srcDir "${buildDir}/generated/src/main/java"
+
+compileJava.dependsOn tasks.openApiGenerate
+
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set(contractFile as GString)
+    outputDir.set("${buildDir}/generated")
+    apiPackage.set("${myPackage}.contract.api")
+    modelPackage.set("${myPackage}.contract.model")
+    invokerPackage.set("${myPackage}.contract.invoker")
+    modelPackage.set("${myPackage}.contract.model")
+    configOptions.set([
+            dateLibrary: "java8"
+    ])
+    configOptions = [
+            dateLibrary: "java8",
+            interfaceOnly: "true",
+            skipDefaultInterface: "true",
+            useSpringBoot3: "true"
+    ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = defaultEncoding
+}
+
+jar {
+
+}

@@ -1,0 +1,32 @@
+import org.codehaus.groovy.runtime.GStringImpl
+
+plugins {
+    id 'java'
+}
+
+group = 'ru.pse.openapi'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+allprojects {
+    group = group
+    version = version
+}
+
+ext {
+    contractFile = "$rootDir/api-spec/demo1.yaml" as GStringImpl
+    defaultEncoding = "UTF-8"
+    snapshotVersion = "1.0-SNAPSHOT"
+}
+
+subprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        // or, via Gradle Plugin Portal:
+        // url "https://plugins.gradle.org/m2/"
+    }
+}
